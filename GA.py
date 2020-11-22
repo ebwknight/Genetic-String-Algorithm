@@ -38,6 +38,7 @@ class GeneticAlgorithm(object):
 		self.population = [] #array to hold population
 		#individuals are stored as tuples, the first item being the sequence and the sencond being fitness
 		self.populate() #populates array
+		#self.data = []
 
 	#Helper funciton to generate random strings
 	#Takes length of target string as an argument for better adaptability
@@ -121,12 +122,12 @@ class GeneticAlgorithm(object):
 	#Main evolution wrapper function
 	def evolve(self):
 
-		for gen in range(self.numGens):
+		for gen in range(self.numGens + 1):
 
 			bPool = [] #array to hold breeding pool
 			offspring = [] #array to hold new generation
 
-			if (gen % self.disInt == 0): #checks if best candidate should be displayed
+			if (gen % self.disInt == 0 or gen == self.numGens): #checks if best candidate should be displayed
 
 				best = ["", 0] #array to hold best candidate
 				for indv in self.population:
@@ -140,9 +141,13 @@ class GeneticAlgorithm(object):
 				#Check to see if target string has been reached or max generations has been reached
 				if (best[1] == 50):
 					print("Target string reached: " + best[0])
+					self.calcAverageFitness()
 					break
+				#If last generation
 				elif (gen == self.numGens):
 					print("Target not matched. Best canidate: " + best[0])
+					#Calculate average fitness
+					self.calcAverageFitness()
 					break
 
 			#If rank selection
@@ -280,6 +285,17 @@ class GeneticAlgorithm(object):
 					
 				self.population = offspring
 
+	def calcAverageFitness(self):
+		fitnesses = []
+		average = 0
+
+		for indv in self.population:
+			fitnesses.append(indv[1] / len(indv[0]))
+
+		for fitness in fitnesses:
+			average += fitness
+
+		print("Average fitness: " + str(average / len(fitnesses)))
 
 #Function to read in and parse command line args
 def getArgs():
